@@ -1,0 +1,50 @@
+\documentclass{article}
+\usepackage[margin=0.5in]{geometry}
+\usepackage[utf8]{inputenc}
+
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+%\usepgfplotslibrary{external}
+%\tikzexternalize
+
+\begin{document}
+
+First example, a 2d and 3d math expressions plotted side to side.
+
+\begin{tikzpicture}
+\begin{axis}
+\addplot[color=red]{exp(x)};
+\end{axis}
+\end{tikzpicture}
+%Here ends the furst plot
+\hskip 5pt
+%Here begins the 3d plot
+\begin{tikzpicture}
+\begin{axis}
+\addplot3[
+    surf,
+]
+{exp(-x^2-y^2)*x};
+\end{axis}
+\end{tikzpicture}
+
+
+
+\begin{tikzpicture}
+\begin{axis}[
+    title=Exmple using the mesh parameter,
+    hide axis,
+    colormap/cool,
+]
+\addplot3[
+    mesh,
+    samples=50,
+    domain=-8:8,
+]
+{sin(deg(sqrt(x^2+y^2)))/sqrt(x^2+y^2)};
+\addlegendentry{$\frac{sin(r)}{r}$}
+\end{axis}
+\end{tikzpicture}
+
+
+\end{document}

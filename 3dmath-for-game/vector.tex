@@ -1,0 +1,726 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{indentfirst}   %% 首行缩进
+\usepackage{fontspec, xunicode, xltxtra, verbatim}
+\usepackage{listings}      %% 支持代码
+\usepackage{xcolor}        %% 代码颜色
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{makeidx}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usetikzlibrary{calc,patterns,angles,quotes}
+
+\usepackage{fancyhdr} %% 定制页眉页脚
+\pagestyle{fancy}
+
+%\setmainfont{Microsoft YaHei}
+\setmainfont{Heiti SC}  
+%\setmainfont{SimSun}       %% 字体
+
+\XeTeXlinebreaklocale zh   %% 中文自动换行
+\XeTeXlinebreakskip = 0pt plus 1pt
+\parindent 2em             %% 段落缩进
+\linespread{1.2}           %% 行间距
+
+\makeindex %% 生成索引
+
+%% 控制verbatim里面显示中文
+\makeatletter
+\def\verbatim@font{\rmfamily\small} %如果使用roman字体族，将sffamily改成rmfamily
+\makeatother
+
+\author{David}
+\title{游戏中的数学}
+
+%% 超链接高亮
+\usepackage{hyperref}
+\hypersetup{colorlinks=false}
+
+\begin{document} 
+\maketitle
+\tableofcontents
+
+
+\chapter{Vector}
+\section{Defination}
+
+一般Vector翻译为：
+
+\begin{itemize}
+\item 向量  - 代数
+\item 矢量  - 几何
+\end{itemize}
+
+ \subsection{代数定义}
+
+行向量（Row Vector）：
+\[
+\mathbf{v} = \vec{v} =   \begin{bmatrix}
+v_x & v_y  &  v_z
+\end{bmatrix}
+\]
+
+列向量（Column Vector）：
+\[
+\mathbf{v} = \vec{v} =   \begin{bmatrix}
+v_x \\
+v_y \\
+v_z
+\end{bmatrix}
+\]
+
+\subsection{几何定义}
+
+\begin{center}
+\begin{tikzpicture}
+%\filldraw[black] (0,0) circle (2pt) node[anchor=west] {Intersection point};
+%\draw[gray, thick] (-1,2) -- (2,-4);
+%\draw[gray, thick] (-1,-1) -- (2,2)
+\filldraw[black] (0,0) circle (1pt) node[anchor=west] {Tail};
+\filldraw[black] (4,4) circle (0pt) node[anchor=west] {Head};
+\draw[gray, thick,->] (0,0) -- (4,4);
+\end{tikzpicture}
+\end{center}
+
+
+\begin{itemize}
+\item 大小（Magnitude）：
+
+\[
+|\vec{v}| = \sqrt{v_x^2 + v_y^2 + v_z^2} = \sqrt{\vec{v}\cdot\vec{v}}
+\]
+
+\item 方向（Direction）：可以用单位向量表示（Normalized）
+
+\[
+\hat{v} =\frac{\vec{v}}{|\vec{v}|}
+\]
+
+
+\end{itemize}
+
+
+\subsection{用途}
+
+\begin{itemize}
+\item 位移（Displacement）
+\item 速度（Velocity）
+\item \ldots
+\end{itemize}
+
+
+\section{Vector vs.  Point}
+
+意义的区别：
+
+\begin{itemize}
+\item Point - 空间绝对位置
+\item Vector - 空间相对位置
+\end{itemize}
+
+
+等价关系：
+
+\begin{center}
+\begin{tikzpicture}
+    % Draw axes
+    \draw [<->,thick] (0,4) node (yaxis) [above] {$y$}
+        |- (4,0) node (xaxis) [right] {$x$};
+    % Draw Point
+    \filldraw[red, right] (3,2) circle (1pt) node[anchor=west] {$\mathbf{p(x,y)}$};
+    % Draw Vector
+    \draw[gray,  very thick,->] (0,0) -- (3,2);
+    \draw[thin, ->,  dashed] (3,1) -- (1.6,1);
+    \node[right] at (3,1) {$\vec{v} = (x,y)$};
+\end{tikzpicture}
+\end{center}
+
+
+尽管代数上是等价的，几何要进行区分理解：
+
+\begin{itemize}
+\item  $\vec{v}$，给出列从原点到点$p(x,y,z)$的位移
+\item  $p(x,y,z)$，则是从原点开始沿着$\vec{v}$指定的量进行移动，最终到达的位置
+\end{itemize}
+
+
+\section{运算及其几何意义}
+
+分两个角度来看：一个代数（计算）角度，一个几何（图形）解释。
+
+向量运算有：
+\begin{itemize}
+\item 加法 ： 几何运算满足三角规则（Triangle Rule）
+\begin{itemize}
+\item 减法：减法是加法的逆运算
+\item 逆元：$\vec{v}$ 的逆元是 $-\vec{v}$，几何意识是反方向
+\end{itemize}
+
+\item 数乘：缩放向量$\vec{v}$
+\item 点积：可用两种几何视角来看，当作投影或向量夹角
+\item 叉积：计算相交两条线的法线
+
+\end{itemize}
+
+\subsection{+}
+
+
+\subsubsection{代数定义}
+
+\[
+\vec{a} + \vec{b}  = 
+\begin{bmatrix}
+a_x\\
+a_y\\
+a_z 
+\end{bmatrix} + 
+\begin{bmatrix}
+b_x\\
+b_y\\
+b_z 
+\end{bmatrix}
+= 
+\begin{bmatrix}
+a_x + b_x\\
+a_y + b_y\\
+a_z + b_z 
+\end{bmatrix}
+\]
+
+满足规则：
+
+\begin{itemize}
+\item $\vec{a} + \vec{b} = \vec{b} + \vec{a}$
+\item $\vec{a} - \vec{b} = \vec{a} + (-\vec{b}) = - (\vec{b} - \vec{a})$
+\end{itemize}
+
+
+\subsubsection{几何解释}
+
+满足三角形法则（Triangle Rule）：
+
+\begin{center}
+\begin{tikzpicture}
+\draw [help lines] (0,-1) grid (15,6);
+%
+% a = (4, 1) 
+% b = (-2, 3)
+% a+b = (2,4)
+% 
+% Triangle Rule for Addition
+\coordinate (A) at (0,0) {};
+\coordinate (B) at (4,1) {};
+\coordinate (C) at (2,4) {}; 
+\coordinate (D) at (6,5) {};
+\draw [thick,  ->,  arrows={-latex}] (A) -- (B);
+\draw [thick,  ->, arrows={-latex}] (B) -- (C);
+\draw [thick,  ->, arrows={-latex}] (A) -- (C);
+\draw [thick,  ->, arrows={-latex},  dashed] (C) -- (D);
+\draw [thick,  ->, arrows={-latex},  dashed] (B) -- (D);
+\node [below] at(2,0.5) {$\vec{a}$};
+\node [above] at(4,4.5) {$\vec{a}$};
+\node [right] at(3,2.5) {$\vec{b}$};
+\node [left] at(1,2) {$\vec{a}+\vec{b}$};
+\node [right] at(5,3) {$\vec{b}+\vec{a}$};
+
+% Triangle Rule for Substraction
+\coordinate (C) at (10,0) {};
+\coordinate (D) at (14,1) {};
+\coordinate (E) at (8,3) {}; 
+
+\draw [thick,  ->,  arrows={-latex}] (C) -- (D);  % a
+\draw [thick,  ->,  arrows={-latex}] (C) -- (E);  % a
+\draw [thick,  ->,  arrows={-latex}] (E) -- (D);  % a-b
+\draw [thick,  ->,  arrows={-latex}, dashed, red] (14, 1.3) -- (8,3.3);  % b-a
+\node [below] at(12,0.5) {$\vec{a}$};
+\node [left] at(9,1.5) {$\vec{b}$};
+\node [below] at(11,2) {$\vec{a}-\vec{b}$};
+\node [above,  red] at(11,2.3) {$\vec{b}-\vec{a}$};
+
+\end{tikzpicture}
+\end{center}
+
+
+\subsubsection{常见用途}
+
+\begin{itemize}
+\item 加法：多次位移的计算
+\item 减法：从一个点到另一个点的位移矢量
+\end{itemize}
+
+\subsection{k}
+\subsubsection{代数定义}
+
+\[
+k\vec{v} = k
+\begin{bmatrix}
+v_x \\
+v_y \\
+v_z
+\end{bmatrix}
+ = 
+\begin{bmatrix}
+kv_x \\
+kv_y \\
+kv_z
+\end{bmatrix}
+\]
+
+满足规则：
+
+\begin{itemize}
+\item $k(\vec{a} + \vec{b}) = k\vec{a} + k\vec{b}$
+\end{itemize}
+
+
+\subsubsection{几何解释}
+
+可以用于向量的缩放：
+
+\begin{center}
+\begin{tikzpicture}
+\draw [help lines] (0,0) grid (14,9);
+%v
+\draw [thick, ->] (0,0) node [below] {$\vec{v}$} -- (2,4);
+%2v
+\draw [thick, ->] (2,0)  node [below] {$2\vec{v}$} -- (6,8);
+%v/2
+\draw [thick, ->] (4,0)  node [below] {$\vec{v}/2$}  -- (5,2);
+%-v
+\draw [thick, <-] (6,0) node [below] {$\vec{v}$} -- (8,4);
+%-v/2
+\draw [thick, <-] (8,0)  node [below] {$2\vec{v}$} -- (12,8);
+%-2v
+\draw [thick, <-] (10,0)  node [below] {$2\vec{v}$} -- (14,8);
+\end{tikzpicture}
+\end{center}
+
+\subsection{dot}
+
+\subsubsection{代数定义}
+
+\[
+\vec{a}\cdot\vec{b} = 
+\begin{bmatrix}
+a_x \\
+a_y \\
+a_z
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+b_x \\
+b_y \\
+b_z
+\end{bmatrix} =
+a_xb_x + a_yb_y + a_zb_z
+\]
+
+满足规则：
+
+\begin{itemize}
+\item 点积交换律：$\vec{a}\cdot\vec{b} = \vec{b}\cdot\vec{a}$
+\item 点积数乘分配律：$(k\vec{b})\cdot\vec{a} = k(\vec{b}\cdot\vec{a})  = \vec{b}\cdot(k\vec{a})$ 
+\item 点积加法分配律： $(\vec{b}+\vec{c})\cdot\vec{a} = \vec{b}\cdot\hat{a} + \vec{c}\cdot\vec{a}$ 
+\end{itemize}
+
+\subsubsection{几何解释 - 投影}
+
+投影视角解释（Projection）：
+
+点积$\vec{a}\cdot\vec{b}$等于$\vec{b}$投影到平行于$\vec{a}$的任何一条线上的有符号长度（Singed Distance），乘以$\vec{a}$的长度。
+
+
+\begin{center}
+\begin{tikzpicture}
+\draw [help lines] (0,-1) grid (9,5);
+
+% a=(1,0)
+% b=(4,2)
+\coordinate (O) at (0,0) {};
+\coordinate (A) at (1, 0) {};
+\coordinate (B_Tail) at (2, 2) {};
+\coordinate (B_Head) at (6, 4) {};
+\coordinate (Dot_Tail) at (2, 0) {};
+\coordinate (Dot_Head) at (6, 0) {};
+
+\draw [thick,  ->,  arrows={-latex}] (O) -- (A);
+\draw [thick,  ->,  arrows={-latex}] (B_Tail) -- (B_Head);
+\draw [thick,  ->,  arrows={-latex},  red] (Dot_Tail) -- (Dot_Head);
+\draw [red, dashed, thick] (B_Tail) -- (Dot_Tail);
+\draw [red, dashed, thick] (B_Head) -- (Dot_Head);
+\node [below] at (0.5, 0) {$\hat{a}$};
+\node [above] at (4, 3.5) {$\vec{b}$};
+\node [below] at (4, 0) {$\hat{a}\cdot\vec{b} = \vec{b}\cdot\hat{a}$ };
+\draw [thick] (2,-.2) -- (2,0.1);
+\draw [thick] (6,-.2) -- (6,0.1);
+
+\end{tikzpicture}
+\end{center}
+
+有符号投影长度：
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+\draw [help lines] (0,-1) grid (20,5);
+
+% a=(1,0)
+% b=(4,2)
+% c=(0,2)
+% d=(-3, 3)
+\coordinate (O) at (0,0) {};
+\coordinate (A) at (1, 0) {};
+\coordinate (B_Tail) at (2, 2) {};
+\coordinate (B_Head) at (6, 4) {};
+\coordinate (Dot_Tail) at (2, 0) {};
+\coordinate (Dot_Head) at (6, 0) {};
+
+% a
+\draw [thick,  ->,  arrows={-latex}] (O) -- (A);
+
+% a.b > 0
+\draw [thick,  ->,  arrows={-latex}] (B_Tail) -- (B_Head);
+\draw [thick,  ->,  arrows={-latex},  red] (Dot_Tail) -- (Dot_Head);
+\draw [red, dashed, thick] (B_Tail) -- (Dot_Tail);
+\draw [red, dashed, thick] (B_Head) -- (Dot_Head);
+\node [below] at (0.5, 0) {$\hat{a}$};
+\node [above] at (4, 3.5) {$\vec{b}$};
+\node [below] at (4, 0) {$\vec{b}\cdot\hat{a} > 0$ };
+\draw [thick] (2,-.2) -- (2,0.1);
+\draw [thick] (6,-.2) -- (6,0.1);
+
+% a.c = 0
+\coordinate (C_Tail) at (10, 2) {};
+\coordinate (C_Head) at (10,4) {};
+\draw [thick,  ->,  arrows={-latex}] (C_Tail) -- (C_Head);
+\draw [red, dashed, thick] (C_Tail) -- (10,0);
+\filldraw [] (10,0) circle (2pt) node [below] {$\vec{c}\cdot\hat{a} = 0$};
+\node [right] at (10, 3) {$\vec{c}$};
+
+% a.d < 0
+\coordinate (D_Tail) at (16, 2) {};
+\coordinate (D_Head) at (13,5) {};
+\coordinate (Dot2_Tail) at (16, 0) {};
+\coordinate (Dot2_Head) at (13,0) {};
+\draw [thick,  ->,  arrows={-latex}] (D_Tail) -- (D_Head);
+\draw [thick,  ->,  arrows={-latex},  red] (Dot2_Tail) -- (Dot2_Head);
+\draw [red, dashed, thick] (D_Tail) -- (Dot2_Tail);
+\draw [red, dashed, thick] (D_Head) -- (Dot2_Head);
+\node [above] at (14.5, 3.5) {$\vec{d}$};
+\node [below] at (14.5, 0) {$\vec{d}\cdot\hat{a} < 0$ };
+\draw [thick] (13,-.2) -- (13,0.1);
+\draw [thick] (16,-.2) -- (16,0.1);
+
+
+\end{tikzpicture}
+\end{center}
+
+缩放（数乘分配律）：
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+\draw [help lines] (0,-1) grid (20,5);
+
+% a=(1,0)
+% b=(4,2)
+% d=(8,4) = 2b
+\coordinate (O) at (0,0) {};
+\coordinate (A) at (1, 0) {};
+\coordinate (B_Tail) at (2, 2) {};
+\coordinate (B_Head) at (6, 4) {};
+\coordinate (Dot_Tail) at (2, 0) {};
+\coordinate (Dot_Head) at (6, 0) {};
+
+% a
+\draw [thick,  ->,  arrows={-latex}] (O) -- (A);
+
+% a.b > 0
+\draw [thick,  ->,  arrows={-latex}] (B_Tail) -- (B_Head);
+\draw [thick,  ->,  arrows={-latex},  red] (Dot_Tail) -- (Dot_Head);
+\draw [red, dashed, thick] (B_Tail) -- (Dot_Tail);
+\draw [red, dashed, thick] (B_Head) -- (Dot_Head);
+\node [below] at (0.5, 0) {$\hat{a}$};
+\node [above] at (4, 3.5) {$\vec{b}$};
+\node [below] at (4, 0) {$\vec{b}\cdot\hat{a}$ };
+\draw [thick] (2,-.2) -- (2,0.1);
+\draw [thick] (6,-.2) -- (6,0.1);
+
+% a.kb
+\coordinate (D_Tail) at (8, 0) {};
+\coordinate (D_Head) at (16,4) {};
+\coordinate (Dot2_Tail) at (8, 0) {};
+\coordinate (Dot2_Head) at (16,0) {};
+\draw [thick,  ->,  arrows={-latex}] (D_Tail) -- (D_Head);
+\draw [thick,  ->,  arrows={-latex},  red] (Dot2_Tail) -- (Dot2_Head);
+\draw [red, dashed, thick] (D_Tail) -- (Dot2_Tail);
+\draw [red, dashed, thick] (D_Head) -- (Dot2_Head);
+\node [above] at (12.5, 2.5) {$k\vec{b}$};
+\node [below] at (12.5, 0) {$(k\vec{b})\cdot\hat{a} = k(\vec{b}\cdot\hat{a})  = \vec{b}\cdot(k\hat{a})$ };
+\draw [thick] (8,-.2) -- (8,0.1);
+\draw [thick] (16,-.2) -- (16,0.1);
+
+\end{tikzpicture}
+\end{center}
+
+分配和筛选（加法分配律）：
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+\draw [help lines] (0,-2) grid (10,5);
+
+% a=(1,0)
+% b=(4,1)
+% c=(2,3)
+\coordinate (O) at (0,0) {};
+\coordinate (A) at (1, 0) {};
+\coordinate (B_Tail) at (2, 0) {};
+\coordinate (B_Head) at (6, 1) {};
+\coordinate (C_Tail) at (6,1) {};
+\coordinate (C_Head) at (8, 4) {};
+\coordinate (DotAB_Tail) at (2, 0) {};
+\coordinate (DotAB_Head) at (6, 0) {};
+\coordinate (DotAC_Tail) at (6, 0) {};
+\coordinate (DotAC_Head) at (8, 0) {};
+
+% a
+\draw [thick,  ->,  arrows={-latex}] (O) -- (A);
+
+% a.b
+\draw [thick,  ->,  arrows={-latex}] (B_Tail) -- (B_Head);
+\draw [thick,  ->,  arrows={-latex},  red] (DotAB_Tail) -- (DotAB_Head);
+\draw [red, dashed, thick] (B_Tail) -- (DotAB_Tail);
+\draw [red, dashed, thick] (B_Head) -- (DotAB_Head);
+\node [below] at (0.5, 0) {$\hat{a}$};
+\node [above] at (4, 0.5) {$\vec{b}$};
+\node [below] at (4, 0) {$\vec{b}\cdot\hat{a}$ };
+\draw [thick] (2,-.5) -- (2,0.1);
+\draw [thick] (6,-.5) -- (6,0.1);
+
+% a.c
+\draw [thick,  ->,  arrows={-latex}] (C_Tail) -- (C_Head);
+\draw [thick,  ->,  arrows={-latex},  red] (DotAC_Tail) -- (DotAC_Head);
+\draw [red, dashed, thick] (C_Tail) -- (DotAC_Tail);
+\draw [red, dashed, thick] (C_Head) -- (DotAC_Head);
+\node [right] at (7, 2.5) {$\vec{c}$};
+\node [above] at (5, 2) {$\vec{b} + \vec{c}$ };
+\node [below] at (7, 0) {$\vec{c}\cdot\hat{a}$ };
+\draw [thick] (8,-.5) -- (8,0.1);
+
+
+% a.(b+c)
+\draw [thick,  ->,  arrows={-latex}] (B_Tail) -- (C_Head);
+\draw [thick,  ->,  arrows={-latex},  blue] (2,-1) -- (8,-1);
+\node [below] at (5, -1) {$(\vec{b}+\vec{c})\cdot\hat{a} = \vec{b}\cdot\hat{a} + \vec{c}\cdot\hat{a}$ };
+
+
+\end{tikzpicture}
+\end{center}
+
+矢量分解：
+
+\begin{center}
+\begin{tikzpicture}
+\draw [help lines] (0,-1) grid (11,3);
+
+% a=(1,0)
+% b=(4,2)
+\coordinate (O) at (0,0) {};
+\coordinate (A) at (1, 0) {};
+\coordinate (B_Tail) at (2, 0) {};
+\coordinate (B_Head) at (6, 2) {};
+\coordinate (Dot_Tail) at (2, 0) {};
+\coordinate (Dot_Head) at (6, 0) {};
+
+\draw [thick,  ->,  arrows={-latex}] (O) -- (A);
+\draw [thick,  ->,  arrows={-latex}] (B_Tail) -- (B_Head);
+\draw [thick,  ->,  arrows={-latex},  red] (Dot_Tail) -- (Dot_Head);
+\draw [thick,  ->,  arrows={-latex},  blue] (Dot_Head) -- (B_Head);
+\node [below] at (0.5, 0) {$\hat{a}$};
+\node [above] at (4, 1) {$\vec{b}$};
+\node [below] at (4, 0) {$\vec{b}_\parallel  = (\vec{b}\cdot\hat{a})\hat{a}$ };
+\node [right] at (6, 1) {$\vec{b}_\perp = \vec{b} - \vec{b}_\parallel = \vec{b} - (\vec{b}\cdot\hat{a})\hat{a}$ };
+
+
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{几何解释 - 夹角}
+
+\[
+\cos\theta = \frac{adjacent}{hypotenuse} = \frac{\vec{b}\cdot\vec{a}}{|\vec{b}||\vec{a}|} = \frac{\vec{b}\cdot\hat{a}}{|\vec{b}|} = \hat{a}\cdot\hat{b}
+\]
+
+
+\[
+\theta = \arccos(\frac{\vec{b}\cdot\vec{a}}{|\vec{b}||\vec{a}|})  = \arccos(\hat{a}\cdot\hat{b})
+\]
+
+\begin{center}
+\begin{tikzpicture}
+\draw [help lines] (0,-1) grid (11,3);
+
+% a=(1,0)
+% b=(4,2)
+\coordinate (O) at (0,0) {};
+\coordinate (A) at (1, 0) {};
+\coordinate (B_Tail) at (2, 0) {};
+\coordinate (B_Head) at (6, 2) {};
+\coordinate (Dot_Tail) at (2, 0) {};
+\coordinate (Dot_Head) at (6, 0) {};
+
+\draw [thick,  ->,  arrows={-latex}] (O) -- (A);
+\draw [thick,  ->,  arrows={-latex}] (B_Tail) -- (B_Head);
+\draw [thick,  ->,  arrows={-latex},  red] (Dot_Tail) -- (Dot_Head);
+\draw [thick,  dashed,  red] (Dot_Head) -- (B_Head);
+\node [below] at (0.5, 0) {$\hat{a}$};
+\node [above] at (4, 1) {$\vec{b}$};
+\node [below] at (4, 0) {$\hat{a}\cdot\vec{b} = \vec{b}\cdot\hat{a}$ };
+\draw [thick] (2,-.2) -- (2,0.1);
+\draw [thick] (6,-.2) -- (6,0.1);
+% angle
+\pic [draw, ->, "$\theta$", angle eccentricity=1.5] {angle = Dot_Head--Dot_Tail--B_Head};
+
+\end{tikzpicture}
+\end{center}
+
+
+不考虑$\theta$值时，可以通过点积知道两个向量之间的夹角关系：
+
+\begin{center}
+\begin{tabular}{ | c | c | c | l | } 
+\hline
+$\vec{a}\cdot\vec{b}$ & $\theta$ &\textbf{ 角度} & \textbf{描述} \\
+\hline
+$>0$ & $[0,  \pi/2)$ &  锐角 & 主要指向通一方向 \\
+\hline
+$=0$ & $\pi/2$ & 直角 & 垂直 \\
+\hline
+$<0$ & $(\pi/2,  \pi]$&  钝角 & 主要指向相反方向\\
+\hline
+\end{tabular}
+\end{center}
+
+
+
+\subsubsection{常见用途}
+
+\begin{itemize}
+\item 投影计算、坐标筛选计算（$\vec{b}\cdot\hat{x}$)
+\item 垂直判定：$\vec{a}\cdot\vec{b} = 0$
+
+\item 半空间判定：$\vec{x}$为空间任意一点，$\vec{n}$平面法向量
+\begin{itemize}
+\item 平面上半空间：$\vec{x}\cdot\vec{n} > 0$
+\item 平面内：$\vec{x}\cdot\vec{n} = 0$
+\item 平面下半空间：$\vec{x}\cdot\vec{n} < 0$
+\end{itemize}
+ 
+\item 计算向量大小：$|\vec{a}| =\sqrt{ \vec{a}\cdot\vec{a}}$
+\item 矢量分解：$ \vec{b}  =  \vec{b}_\parallel  + \vec{b}_\perp$
+\item 夹角计算：$\theta = \arccos(\frac{\vec{b}\cdot\vec{a}}{|\vec{b}||\vec{a}|})  = \arccos(\hat{a}\cdot\hat{b})$
+\end{itemize}
+
+\subsection{cross}
+
+\subsubsection{代数定义}
+
+\[
+\vec{a} \times \vec{b} = 
+\begin{bmatrix}
+a_x \\
+a_y \\
+a_y 
+\end{bmatrix} \times
+\begin{bmatrix}
+b_x \\
+b_y \\
+b_y 
+\end{bmatrix} = 
+\begin{vmatrix}
+\vec{i} & \vec{j} & \vec{k} \\
+a_x & a_y & a_z \\
+b_x & b_y & b_z
+\end{vmatrix} = 
+\begin{bmatrix}
+a_yb_z - a_zb_y \\
+a_zb_x - a_xb_z \\
+a_xb_y - a_yb_x 
+\end{bmatrix}
+\]
+
+满足规律：
+
+\begin{itemize}
+\item 叉积反交换律： $\vec{a}\times\vec{b} = - \vec{b}\times\vec{a}$
+\item $\vec{a} \times \vec{a} = 0$
+\item $k(\vec{a} \times \vec{b}) = (k\vec{a}) \times \vec{b} = \vec{a} \times (k\vec{b})$
+\item $\vec{a} \times (\vec{b} + \vec{c}) = \vec{a} \times \vec{b} + \vec{a} \times \vec{c}$
+\end{itemize}
+
+\subsubsection{几何解释}
+
+叉积向量的大小：包含$\vec{a}$和$\vec{b}$的平行四边形面积，为0则两条线平行
+
+\[
+|\vec{a} \times \vec{b}| = |\vec{a}| |\vec{b}| \sin\theta
+\]
+
+叉积向量的方向：
+
+A、右手法则情况下
+
+\begin{center}
+\begin{tikzpicture}
+\draw[-,fill=white!95!red](0,0)--(3,0)--(4,1)--(1,1)--cycle;
+\node at (2,0.5) {$|\textcolor{blue}{\vec{a}}\times \textcolor{red}{\vec{b}}|$};
+\draw[ultra thick,-latex,blue](0,0)--(3,0)node[midway,below]{$\vec{a}$};
+\draw[ultra thick,-latex,red](0,0)--(1,1)node[midway,above]{$\vec{b}$};
+\draw[ultra thick,-latex,blue!50!red](0,0)--(0,3)node[pos=0.7,right]{$\vec{a}\times \vec{b}$};
+\draw[ultra thick,-latex,blue!50!red](0,0)--(0,-3)node[pos=0.7,right]{$\vec{b}\times \vec{a}$};
+\draw (0.6,0) arc [start angle=0,end angle=45,radius=0.6]
+node[pos=0.7,right]{$\theta$};
+\end{tikzpicture}
+\end{center}
+
+
+B、左手法则情况下
+\begin{center}
+\begin{tikzpicture}
+\draw[-,fill=white!95!red](0,0)--(3,0)--(4,1)--(1,1)--cycle;
+\node at (2,0.5) {$|\textcolor{blue}{\vec{a}}\times \textcolor{red}{\vec{b}}|$};
+\draw[ultra thick,-latex,blue](0,0)--(3,0)node[midway,below]{$\vec{a}$};
+\draw[ultra thick,-latex,red](0,0)--(1,1)node[midway,above]{$\vec{b}$};
+\draw[ultra thick,-latex,blue!50!red](0,0)--(0,3)node[pos=0.7,right]{$\vec{b}\times \vec{a}$};
+\draw[ultra thick,-latex,blue!50!red](0,0)--(0,-3)node[pos=0.7,right]{$\vec{a}\times \vec{b}$};
+\draw (0.6,0) arc [start angle=0,end angle=45,radius=0.6]
+node[pos=0.7,right]{$\theta$};
+\end{tikzpicture}
+\end{center}
+
+
+坐标基向量的叉积（左右手系不影响计算结果）：
+
+\begin{center}
+\begin{tabular}{cc}
+$\hat{x} \times \hat{y} = \hat{z}$ & $ \hat{y} \times \hat{x} = -\hat{z}$ \\
+$\hat{y} \times \hat{z} = \hat{x}$ & $ \hat{z} \times \hat{y} = -\hat{x}$ \\
+$\hat{z} \times \hat{x} = \hat{y}$ & $ \hat{x} \times \hat{z} = -\hat{y}$ 
+\end{tabular}
+\end{center}
+
+
+\section{note}
+
+\chapter{Matrix}
+\section{Rotation}
+\section{Scale}
+\section{Transform}
+
+\chapter{Rotation}
+\section{Axis angle}
+\section{Euler angle}
+\section{Quaterrnion}
+\section{Convertion}
+
+
+
+\end{document}  

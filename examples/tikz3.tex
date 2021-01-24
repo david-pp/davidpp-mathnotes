@@ -1,0 +1,128 @@
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{calc}
+
+\begin{document}
+
+\begin{tikzpicture}[scale=1.5]
+    % Draw axes
+    \draw [<->,thick] (0,2) node (yaxis) [above] {$y$}
+        |- (3,0) node (xaxis) [right] {$x$};
+    % Draw two intersecting lines
+    \draw (0,0) coordinate (a_1) -- (2,1.8) coordinate (a_2);
+    \draw (0,1.5) coordinate (b_1) -- (2.5,0) coordinate (b_2);
+    % Calculate the intersection of the lines a_1 -- a_2 and b_1 -- b_2
+    % and store the coordinate in c.
+    \coordinate (c) at (intersection of a_1--a_2 and b_1--b_2);
+    % Draw lines indicating intersection with y and x axis. Here we use
+    % the perpendicular coordinate system
+    \draw[dashed] (yaxis |- c) node[left] {$y'$}
+        -| (xaxis -| c) node[below] {$x'$};
+    % Draw a dot to indicate intersection point
+    \fill[red] (c) circle (2pt);
+\end{tikzpicture}
+
+
+
+\begin{tikzpicture}[
+    scale=5,
+    axis/.style={very thick, ->, >=stealth'},
+    important line/.style={thick},
+    dashed line/.style={dashed, thin},
+    pile/.style={thick, ->, >=stealth', shorten <=2pt, shorten
+    >=2pt},
+    every node/.style={color=black}
+    ]
+    % axis
+    \draw[axis] (-0.1,0)  -- (1.1,0) node(xline)[right]
+        {$G\uparrow/T\downarrow$};
+    \draw[axis] (0,-0.1) -- (0,1.1) node(yline)[above] {$E$};
+    % Lines
+    \draw[important line] (.15,.15) coordinate (A) -- (.85,.85)
+        coordinate (B) node[right, text width=5em] {$Y^O$};
+    \draw[important line] (.15,.85) coordinate (C) -- (.85,.15)
+        coordinate (D) node[right, text width=5em] {$\mathit{NX}=x$};
+    % Intersection of lines
+    \fill[red] (intersection cs:
+       first line={(A) -- (B)},
+       second line={(C) -- (D)}) coordinate (E) circle (.4pt)
+       node[above,] {$A$};
+    % The E point is placed more or less randomly
+    \fill[red]  (E) +(-.075cm,-.2cm) coordinate (out) circle (.4pt)
+        node[below left] {$B$};
+    % Line connecting out and ext balances
+    \draw [pile] (out) -- (intersection of A--B and out--[shift={(0:1pt)}]out)
+        coordinate (extbal);
+    \fill[red] (extbal) circle (.4pt) node[above] {$C$};
+    % line connecting  out and int balances
+    \draw [pile] (out) -- (intersection of C--D and out--[shift={(0:1pt)}]out)
+        coordinate (intbal);
+    \fill[red] (intbal) circle (.4pt) node[above] {$D$};
+    % line between out og all balanced out :)
+    \draw[pile] (out) -- (E);
+\end{tikzpicture}
+
+\begin{tikzpicture}
+  [
+    scale=3,
+    >=stealth,
+    point/.style = {draw, circle,  fill = black, inner sep = 1pt},
+    dot/.style   = {draw, circle,  fill = black, inner sep = .2pt},
+  ]
+
+  % the circle
+  \def\rad{1}
+  \node (origin) at (0,0) [point, label = {below right:$P_c$}]{};
+  \draw (origin) circle (\rad);
+
+  % triangle nodes: just points on the circle
+  \node (n1) at +(60:\rad) [point, label = above:$1$] {};
+  \node (n2) at +(-145:\rad) [point, label = below:$2$] {};
+  \node (n3) at +(-45:\rad) [point, label = {below right:$3$ $(0, 0, 0)$}] {};
+
+  % triangle edges: connect the vertices, and leave a node at the midpoint
+  \draw[->] (n3) -- node (a) [label = {above right:$\vec{v}_1$}] {} (n1);
+  \draw[->] (n3) -- node (b) [label = {below right:$\vec{v}_2$}] {} (n2);
+  \draw[dashed] (n2) -- (n1);
+
+  % Bisectors
+  % start at the point lying on the line from (origin) to (a), at
+  % twice that distance, and then draw a path going to the point on
+  % the line lying on the line from (a) to the (origin), at 3 times
+  % that distance.
+  \draw[dotted]
+    ($ (origin) ! 2 ! (a) $)
+    node [right] {Bisector 1}
+    -- ($(a) ! 3 ! (origin)$ );
+
+  % similarly for origin and b
+  \draw[dotted]
+    ($ (origin) ! 2 ! (b) $)
+    -- ($(b) ! 3 ! (origin)$ )
+    node [right] {Bisector 2};
+
+  % short vectors
+  \draw[->]
+    ($ (origin) ! -.7 ! (a) $)
+    -- node [below] {$\vec{u}_4$}
+    ($ (origin) ! -.1 ! (a) $);
+  \draw[->]
+    ($ (origin) ! -.1 ! (b) $)
+    -- node [right] {$\vec{u}_3$}
+    ($ (origin) ! -.7 ! (b) $);
+
+  % Right angle symbols
+  \def\ralen{.5ex}  % length of the short segment
+  \foreach \inter/\first/\last in {a/n3/origin, b/n2/origin}
+    {
+      \draw let \p1 = ($(\inter)!\ralen!(\first)$), % point along first path
+                \p2 = ($(\inter)!\ralen!(\last)$),  % point along second path
+                \p3 = ($(\p1)+(\p2)-(\inter)$)      % corner point
+            in
+              (\p1) -- (\p3) -- (\p2)               % path
+              ($(\inter)!.5!(\p3)$) node [dot] {};  % center dot
+    }
+\end{tikzpicture}
+
+\end{document}
